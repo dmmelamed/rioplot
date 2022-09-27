@@ -1,0 +1,10 @@
+Package: rioplot
+Type: Package
+Title: Turn a regression model inside out.
+Version: 0.1.0
+Author: David Melamed, Ronald L. Breiger, and Eric Schoon
+Maintainer: The package maintainer <dmmelamed@gmail.com>
+Description: Turns regression models inside out; decomposes variances and coefficients.
+License: What license is it under? None.
+Encoding: UTF-8
+LazyData: true
