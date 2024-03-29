@@ -24,7 +24,7 @@ Two values which correspond to the x and y co-ordinates in the graph.
 %% ...
 }
 \references{
-Schoon, Eric, David Melamed, and Ronald L. Breiger. 2023. Regression Inside Out. NY: Cambridge University Press.
+Schoon, Eric, David Melamed, and Ronald L. Breiger. 2024. Regression Inside Out. NY: Cambridge University Press.
 }
 \author{
 David Melamed, Ronald L. Breiger, and Eric Schoon

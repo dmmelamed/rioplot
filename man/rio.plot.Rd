@@ -25,7 +25,7 @@ rio.plot(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h.just=-.2,
   \item{var.name.col}{Color of the names of variables in the plot. Default is "black"}
   \item{include.int}{Whether the underlying model included a model intercept. Default is "yes"}
   \item{group.cases}{Whether to aggregate cases into clusters or subsets. If yes, provide a numeric vector of memberships. It will aggregate over them by summing.}
-  \item{model.type}{The type of regression model. OLS is supported via the lm function. Logistic and Poisson regression are supported via the glm function. Negative Binomial regression is supported via the MASS package.}}
+  \item{model.type}{The type of regression model. OLS is supported via the lm function. Logistic and Poisson regression are supported via the glm function. Negative Binomial regression is supported via the MASS package. Default is "OLS." For logistic regression, use "logit." For Poisson regression, use "poisson." For negative binomial regression, use "nb."}}
 
 \details{The function take a regression model object (OLS, logistic, Poisson, or negative binomial) and computes the corresponding row (case) and column (variables) scores. The scores are part of the output, as is a ggplot object of the model.
 %%  ~~ If necessary, more details than the description above ~~
@@ -40,7 +40,7 @@ rio.plot returns several objects.
   \item{UUt}{The orthogonalized column space matrix from the Singular Value Decomposition of the predictor matrix and fitted values, post-multiplied by its transpose.}
 }
 \references{
-Schoon, Eric, David Melamed, and Ronald L. Breiger. 2023. Regression Inside Out. NY: Cambridge University Press.
+Schoon, Eric, David Melamed, and Ronald L. Breiger. 2024. Regression Inside Out. NY: Cambridge University Press.
 }
 \author{
 David Melamed, Ronald L. Breiger, and Eric Schoon
