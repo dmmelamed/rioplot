@@ -1,6 +1,6 @@
 require(tidyverse)
 require(ggrepel)
-# devtools::install_github("dmmelamed/rioplot")
+# install.packages("rioplot")
 require(rioplot)
 
 rm(list=ls())

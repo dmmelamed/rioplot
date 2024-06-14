@@ -19,7 +19,7 @@ ggplot(dat,aes(x=X,y=Y)) + geom_point(size=2) + theme_classic() + geom_abline(sl
 ##########################################
 
 #Data
-require(rioplot)
+
 rm(list=ls())
 data("SchneiderAndMakszin06")
 y05<-sm.data.05$fde
@@ -229,7 +229,7 @@ pvalue = summary(povdM1)$coefficients[,4]
 mse_j = resid_sqrd/(dim(X)[1] - dim(X)[2])
 mse_j = round(mse_j,8)
 
-var = matrix(0, 4185, 7)
+var = matrix(0, 4185, 8)
 denom = dim(var)[1]-dim(var)[2]
 for (i in 1:dim(var)[1]) {
   var[i,] = (resid_sqrd[i]/denom)*diag(solve(t(X)%*%X))

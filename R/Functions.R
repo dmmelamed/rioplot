@@ -1,6 +1,6 @@
 rio.plot<-function(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h.just=-.2,v.just=0,case.col="blue",var.name.col="black",include.int="yes",group.cases=1,model.type="OLS"){
-  require(tidyverse)
-  X<-m1$model[,2:ncol(m1$model)]
+  X1 <- NULL; X2<- NULL; agg<-NULL; gr<-NULL; no1<-NULL; no2<-NULL; x<-NULL
+   X<-m1$model[,2:ncol(m1$model)]
   y<-m1$model[,1]
   u.out<-svd(X)$u
   uut.out <- u.out %*% t(u.out)
@@ -31,7 +31,7 @@ rio.plot<-function(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h
     variables <- variables[-exclude.vars]
     pdat <- data.frame(V2,variables)}
   
-  if(class(V2)[1]=="numeric"){
+  if(is(V2,"numeric")){
     pdat<-data.frame(X1=pdat[1,1],X2=pdat[2,1],variables=pdat[1,2])
     V2<-t(as.matrix(V2))}
   project.point <-function(p1,p2){
@@ -55,7 +55,7 @@ rio.plot<-function(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h
     out <- list(newpoint=newpoint)
     return(out)}
   l1 <- nrow(V2) -1
-  if(class(V2)[1]=="matrix"){
+  if(is(V2,"matrix")){
     lineseg1<-rbind(project.point(V2[1,1:2],V2[nrow(V2),1:2])$newpoint,V2[1,1:2])
     lineseg1<-data.frame(lineseg1,1)
     colnames(lineseg1)<-c("x","y","gr")
@@ -68,70 +68,158 @@ rio.plot<-function(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h
   
   if(col.names[1]=="no"){
     
-    if(r1[1]=="none"){if(class(V2)[1]=="matrix"){
-      p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-        geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-        geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") + coord_fixed(ratio=1)  + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-          p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-            geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-            coord_fixed(ratio=1)  + geom_point(data=pdat,aes(x=X1,y=X2))}
+    if(r1[1]=="none"){if(is(V2,"matrix")){
+      p1 <- ggplot2::ggplot()  + 
+        ggplot2::theme_classic() + 
+        ggplot2::labs(x="First Dimension",y="Second Dimension") +
+        ggplot2::geom_vline(xintercept=0) + 
+        ggplot2::geom_hline(yintercept=0) + 
+        ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ 
+        ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+        ggplot2::guides(color = "none") +
+        ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") + 
+        ggplot2::coord_fixed(ratio=1)  + 
+        ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2))}else{
+          p1 <- ggplot2::ggplot()  + 
+            ggplot2::theme_classic() + 
+            ggplot2::labs(x="First Dimension",y="Second Dimension") +
+            ggplot2::geom_vline(xintercept=0) + 
+            ggplot2::geom_hline(yintercept=0) + 
+            ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+            ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+            ggplot2::guides(color = "none") +
+            ggplot2::coord_fixed(ratio=1)  + 
+            ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2))}
       
-    }else {if(length(group.cases)==1){if(class(V2)[1]=="matrix"){
-      p1 <- ggplot()   + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-        geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-        geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") +
-        geom_point(data=U2,aes(x=no1,y=no2),color=case.col) + geom_text(data=U2,aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-          p1 <- ggplot()   + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-            geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-            
-            geom_point(data=U2,aes(x=no1,y=no2),color=case.col) + geom_text(data=U2,aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}
+    }else {if(length(group.cases)==1){if(is(V2,"matrix")){
+      p1 <- suppressMessages(ggplot2::ggplot()   + 
+        ggplot2::theme_classic() + 
+        ggplot2::labs(x="First Dimension",y="Second Dimension") +
+        ggplot2::geom_vline(xintercept=0) + 
+        ggplot2::geom_hline(yintercept=0) + 
+        ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ 
+        ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+        ggplot2::guides(color = "none") +
+        ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") +
+        ggplot2::geom_point(data=U2,ggplot2::aes(x=no1,y=no2),color=case.col) + 
+        ggplot2::geom_text(data=U2,ggplot2::aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + 
+        ggplot2::coord_fixed(ratio=1) + 
+        ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}else{
+          p1 <- suppressMessages(ggplot2::ggplot()   + 
+            ggplot2::theme_classic() + 
+            ggplot2::labs(x="First Dimension",y="Second Dimension") +
+            ggplot2::geom_vline(xintercept=0) + 
+            ggplot2::geom_hline(yintercept=0) + 
+            ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+            ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+            ggplot2::guides(color = "none") +
+            ggplot2::geom_point(data=U2,ggplot2::aes(x=no1,y=no2),color=case.col) + 
+            ggplot2::geom_text(data=U2,ggplot2::aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + 
+            ggplot2::coord_fixed(ratio=1) + 
+            ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}
       
     }else {U3 <- data.frame(U2)
-    U3 <- mutate(U3,agg=group.cases)
+    U3 <- data.frame(U3,agg=group.cases)
     colnames(U3)[1:2] <- c("no1","no2")
-    U5 <- U3 %>% group_by(agg) %>% summarize(x=mean(no1),y=mean(no2))
-    if(class(V2)[1]=="matrix"){
-      p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-        geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-        geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") +
-        geom_point(data=U5,aes(x=x,y=y),color=case.col) + geom_text(data=U5,aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-          p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-            geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-            
-            geom_point(data=U5,aes(x=x,y=y),color=case.col) + geom_text(data=U5,aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}
+    U5 <- data.frame(aggregate(U3$no1,by=list(U3$agg),FUN="mean"),pov=aggregate(U3$no2,by=list(U3$agg),FUN="mean")[,2])
+    colnames(U5) <- c("agg","x","y")
+    if(is(V2,"matrix")){
+      p1 <- suppressMessages(ggplot2::ggplot()  + 
+        ggplot2::theme_classic() + 
+        ggplot2::labs(x="First Dimension",y="Second Dimension") +
+        ggplot2::geom_vline(xintercept=0) + 
+        ggplot2::geom_hline(yintercept=0) + 
+        ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ 
+        ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+        ggplot2::guides(color = "none") +
+        ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") +
+        ggplot2::geom_point(data=U5,ggplot2::aes(x=x,y=y),color=case.col) + 
+        ggplot2::geom_text(data=U5,ggplot2::aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + 
+        ggplot2::coord_fixed(ratio=1) + 
+        ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}else{
+          p1 <- suppressMessages(ggplot2::ggplot()  + 
+            ggplot2::theme_classic() + 
+            ggplot2::labs(x="First Dimension",y="Second Dimension") +
+            ggplot2::geom_vline(xintercept=0) + ggplot2::geom_hline(yintercept=0) + 
+            ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+            ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=variables, hjust=h.just,vjust=v.just),color=var.name.col) + 
+            ggplot2::guides(color = "none") +
+            ggplot2::geom_point(data=U5,ggplot2::aes(x=x,y=y),color=case.col) + 
+            ggplot2::geom_text(data=U5,ggplot2::aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + 
+            ggplot2::coord_fixed(ratio=1) + 
+            ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}
     
     }}
-  }else{   if(r1[1]=="none"){if(class(V2)[1]=="matrix"){
-    p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-      geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-      geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") + coord_fixed(ratio=1)  + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-        p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-          geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-          coord_fixed(ratio=1)  + geom_point(data=pdat,aes(x=X1,y=X2))}
+  }else{   if(r1[1]=="none"){if(is(V2,"matrix")){
+    p1 <- suppressMessages(ggplot2::ggplot()  + ggplot2::theme_classic() + 
+      ggplot2::labs(x="First Dimension",y="Second Dimension") +
+      ggplot2::geom_vline(xintercept=0) + ggplot2::geom_hline(yintercept=0) + 
+      ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ 
+      ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+      ggplot2::guides(color = "none") +
+      ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") + 
+      ggplot2::coord_fixed(ratio=1)  + 
+      ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}else{
+        p1 <- suppressMessages(ggplot2::ggplot()  + ggplot2::theme_classic() + 
+          ggplot2::labs(x="First Dimension",y="Second Dimension") +
+          ggplot2::geom_vline(xintercept=0) + ggplot2::geom_hline(yintercept=0) + 
+          ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+          ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+          ggplot2::guides(color = "none") +
+          ggplot2::coord_fixed(ratio=1)  + 
+          ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}
     
-  }else {if(length(group.cases)==1){if(class(V2)[1]=="matrix"){
-    p1 <- ggplot()   + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-      geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-      geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") +
-      geom_point(data=U2,aes(x=no1,y=no2),color=case.col) + geom_text(data=U2,aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-        p1 <- ggplot()   + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-          geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-          
-          geom_point(data=U2,aes(x=no1,y=no2),color=case.col) + geom_text(data=U2,aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}
+  }else {if(length(group.cases)==1){if(is(V2,"matrix")){
+    p1 <- suppressMessages(ggplot2::ggplot()   + ggplot2::theme_classic() + ggplot2::labs(x="First Dimension",y="Second Dimension") +
+      ggplot2::geom_vline(xintercept=0) + ggplot2::geom_hline(yintercept=0) + 
+      ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+
+      ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+      ggplot2::guides(color = "none") +
+      ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") +
+      ggplot2::geom_point(data=U2,ggplot2::aes(x=no1,y=no2),color=case.col) + 
+      ggplot2::geom_text(data=U2,ggplot2::aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + 
+      ggplot2::coord_fixed(ratio=1) + 
+      ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}else{
+        p1 <- suppressMessages(ggplot2::ggplot()   + ggplot2::theme_classic() + 
+          ggplot2::labs(x="First Dimension",y="Second Dimension") +
+          ggplot2::geom_vline(xintercept=0) + ggplot2::geom_hline(yintercept=0) + 
+          ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+          ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+          ggplot2::guides(color = "none") +
+          ggplot2::geom_point(data=U2,ggplot2::aes(x=no1,y=no2),color=case.col) + 
+          ggplot2::geom_text(data=U2,ggplot2::aes(x=no1,y=no2,label=case.names), hjust=h.just,vjust=v.just) + 
+          ggplot2::coord_fixed(ratio=1) + 
+          ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}
     
   }else {U3 <- data.frame(U2)
-  U3 <- mutate(U3,agg=group.cases)
+  U3 <- data.frame(U3,agg=group.cases)
   colnames(U3)[1:2] <- c("no1","no2")
-  U5 <- U3 %>% group_by(agg) %>% summarize(x=mean(no1),y=mean(no2))
-  if(class(V2)[1]=="matrix"){
-    p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-      geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-      geom_line(data=lineseg1,mapping=aes(x=x,y=y,group=gr),color="grey65") +
-      geom_point(data=U5,aes(x=x,y=y),color=case.col) + geom_text(data=U5,aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}else{
-        p1 <- ggplot()  + theme_classic() + labs(x="First Dimension",y="Second Dimension") +
-          geom_vline(xintercept=0) + geom_hline(yintercept=0) + geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ geom_text(data=pdat,aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + guides(color = "none") +
-          
-          geom_point(data=U5,aes(x=x,y=y),color=case.col) + geom_text(data=U5,aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + coord_fixed(ratio=1) + geom_point(data=pdat,aes(x=X1,y=X2))}
+  U5 <- data.frame(aggregate(U3$no1,by=list(U3$agg),FUN="mean"),pov=aggregate(U3$no2,by=list(U3$agg),FUN="mean")[,2])
+  colnames(U5) <- c("agg","x","y")
+  if(is(V2,"matrix")){
+    p1 <- suppressMessages(ggplot2::ggplot()  + ggplot2::theme_classic() + 
+      ggplot2::labs(x="First Dimension",y="Second Dimension") +
+      ggplot2::geom_vline(xintercept=0) + 
+      ggplot2::geom_hline(yintercept=0) + 
+      ggplot2::geom_abline(intercept=0,slope=(V2[nrow(V2),2]/V2[nrow(V2),1]))+ 
+      ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+      ggplot2::guides(color = "none") +
+      ggplot2::geom_line(data=lineseg1,mapping=ggplot2::aes(x=x,y=y,group=gr),color="grey65") +
+      ggplot2::geom_point(data=U5,ggplot2::aes(x=x,y=y),color=case.col) + 
+      ggplot2::geom_text(data=U5,ggplot2::aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + 
+      ggplot2::coord_fixed(ratio=1) + 
+      ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}else{
+        p1 <- suppressMessages(ggplot2::ggplot()  + ggplot2::theme_classic() + 
+          ggplot2::labs(x="First Dimension",y="Second Dimension") +
+          ggplot2::geom_vline(xintercept=0) + 
+          ggplot2::geom_hline(yintercept=0) + 
+          ggplot2::geom_abline(intercept=0,slope=(V2[2]/V2[1]))+ 
+          ggplot2::geom_text(data=pdat,ggplot2::aes(x=X1,y=X2,label=col.names, hjust=h.just,vjust=v.just),color=var.name.col) + 
+          ggplot2::guides(color = "none") +
+          ggplot2::geom_point(data=U5,ggplot2::aes(x=x,y=y),color=case.col) + 
+          ggplot2::geom_text(data=U5,ggplot2::aes(x=x,y=y,label=agg), hjust=h.just,vjust=v.just) + 
+          ggplot2::coord_fixed(ratio=1) + 
+          ggplot2::geom_point(data=pdat,ggplot2::aes(x=X1,y=X2)))}
   
   }}}
   
@@ -163,7 +251,7 @@ rio.plot<-function(m1,exclude.vars="no",r1="none",case.names="",col.names="no",h
             W<-diag((m1$fitted.values*(1-m1$fitted.values)))}else if(model.type=="poisson"){
               W<-diag(m1$fitted.values)}else if(model.type=="nb"){
                 W<-diag(m1$fitted.values/(1+(1/m1$theta)*m1$fitted.values))}else{
-                  print("model.type should be OLS, logit, poisson, or nb.")} 
+                  message("model.type should be OLS, logit, poisson, or nb.")} 
           
           cov<-solve(t(X) %*% W %*% X)
           # Weight the variance/covariance matrix by the case's contributions to the MSE
@@ -211,7 +299,9 @@ decompose.model <- function(m1,group.by=group.by,include.int="yes",model.type="O
     vtab2<-cbind(vtab2,diag(vcov(m1)))
     colnames(vtab2)[ncol(vtab2)]<-"Model Variances"
     rownames(vtab2) <- colnames(X)
-    
+    if(sum(round(rowSums(ttab2[,-(ncol(ttab2))]),3) != round(ttab2[,4],3))==nrow(ttab2)){warning("Things are not adding up. Did you specify the model.type correctly?")}
+    out<-list(decomp.coef=ttab2,decomp.var=vtab2)
+    return(out)
     # End OLS Code
   } else if(model.type=="logit"){
     
@@ -250,6 +340,9 @@ decompose.model <- function(m1,group.by=group.by,include.int="yes",model.type="O
     vtab2<-cbind(vtab2,diag(vcov(m1)))
     colnames(vtab2)[ncol(vtab2)]<-"Model Variances"
     rownames(vtab2) <- colnames(X)
+    out<-list(decomp.coef=ttab2,decomp.var=vtab2)
+    if(sum(round(rowSums(ttab2[,-(ncol(ttab2))]),3) != round(ttab2[,4],3))==nrow(ttab2)){warning("Things are not adding up. Did you specify the model.type correctly?")}
+    return(out)
   }else if(model.type=="poisson"){
     W<-diag(m1$fitted.values)
     z<-X %*% coef(m1) + (m1$model[,1]-m1$fitted.values)/m1$fitted.values
@@ -284,6 +377,9 @@ decompose.model <- function(m1,group.by=group.by,include.int="yes",model.type="O
     vtab2<-cbind(vtab2,diag(vcov(m1)))
     colnames(vtab2)[ncol(vtab2)]<-"Model Variances"
     rownames(vtab2) <- colnames(X)
+    out<-list(decomp.coef=ttab2,decomp.var=vtab2)
+    if(sum(round(rowSums(ttab2[,-(ncol(ttab2))]),3) != round(ttab2[,4],3))==nrow(ttab2)){warning("Things are not adding up. Did you specify the model.type correctly?")}
+    return(out)
   }else if(model.type=="nb"){
     W<-diag(m1$fitted.values/(1+(1/m1$theta)*m1$fitted.values))
     z<-X %*% coef(m1) + (m1$model[,1]-m1$fitted.values)/m1$fitted.values
@@ -318,10 +414,12 @@ decompose.model <- function(m1,group.by=group.by,include.int="yes",model.type="O
     vtab2<-cbind(vtab2,diag(vcov(m1)))
     colnames(vtab2)[ncol(vtab2)]<-"Model Variances"
     rownames(vtab2) <- colnames(X)
-  }else{print("model.type should be OLS, logit, poisson, or nb.")} 
-  
-  out<-list(decomp.coef=ttab2,decomp.var=vtab2)
-  return(out)}
+    out<-list(decomp.coef=ttab2,decomp.var=vtab2)
+    if(sum(round(rowSums(ttab2[,-(ncol(ttab2))]),3) != round(ttab2[,4],3))==nrow(ttab2)){warning("Things are not adding up. Did you specify the model.type correctly?")}
+    return(out)
+  }
+  else{message("model.type should be OLS, logit, poisson, or nb.")} 
+  }
 
 
 project.point <-function(p1,p2){

@@ -1,0 +1,27 @@
+---
+title: "cosine"
+output: rmarkdown::html_vignette
+description: >
+  This vignette explains the rationale and implementation for the cosine function.
+vignette: >
+  %\VignetteIndexEntry{cosine}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+The cosine function computes the sum of cross-products and divides that by the product of distances from the origin. Cosine similarity ranges from -1 to 1, with more similar profiles having more positive values.  
+
+Below, we illustrate with an example from Schoon, Melamed, and Breiger (2024). In the example, the USA and the UK have a positive cosine similarity, while the USA and Ireland have a negative cosine similarity. The USA and the UK have similar profiles across the variables in the data, while the USA and Ireland have dissimilar profiles across the variables in the data. 
+```{r}
+library(rioplot)
+data(Kenworthy99)
+m1 <- lm(scale(dv) ~ scale(gdp) + scale(pov) + scale(tran) -1,data=Kenworthy99)
+rp1 <- rio.plot(m1,include.int="no",r1=1:15)
+
+cosine(rp1$row.dimensions[15,],rp1$row.dimensions[8,]) 
+# cosine similarity between USA and Ireland
+
+cosine(rp1$row.dimensions[15,],rp1$row.dimensions[14,]) 
+# cosine similarity between USA and United Kingdom
+```
+

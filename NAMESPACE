@@ -1,1 +1,4 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("stats", "aggregate", "coef", "resid", "vcov")
+importFrom("methods", "is")
+import(ggplot2)

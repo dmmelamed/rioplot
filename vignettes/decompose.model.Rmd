@@ -1,0 +1,46 @@
+---
+title: "decompose.model"
+output: rmarkdown::html_vignette
+description: >
+  This vignette explains the rationale and implementation for the decompose.model function.
+vignette: >
+  %\VignetteIndexEntry{decompose.model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+As described in detail in Schoon, Melamed, and Breiger (2024), regression inside out entails understanding cases' contributions to the regression model space. Decomposing regression coefficients by cases or subsets and model visualization techniques are the key tools of regression inside out. decompose.model takes a regression model object and a numeric grouping vector for the cases, and returns the contributions to the regression coefficients and model variances by the grouping vector. Currently supported models include OLS, logistic regression, Poisson regression, and negative binomial regression. An example of each is provided below.  
+
+OLS regression:
+```{r}
+library(rioplot)
+data(Kenworthy99)
+m1 <- lm(scale(dv) ~ scale(gdp) + scale(pov) + scale(tran) -1,data=Kenworthy99)
+decompose.model(m1,group.by = c(rep(1,5),rep(2,5),rep(3,5)),include.int = "no")
+```
+
+Logistic regression:
+```{r}
+data("Hilbe")
+Hilbe <- data.frame(Hilbe,binAffairs=ifelse(Hilbe$naffairs>0,1,0)) 
+m2<-glm(binAffairs ~ avgmarr + hapavg + vryhap + smerel + vryrel + yrsmarr4 + 
+          yrsmarr5 + yrsmarr6,data=Hilbe, family=binomial())
+decompose.model(m2,group.by = c(rep(1,201),rep(2,200),rep(3,200)),
+                model.type = "logit")
+```
+
+Poisson regression:
+```{r}
+m3<-glm(naffairs~avgmarr + hapavg + vryhap + smerel + vryrel + yrsmarr4 + 
+          yrsmarr5 + yrsmarr6,data=Hilbe,family=poisson(link="log"))
+decompose.model(m3,group.by = c(rep(1,201),rep(2,200),rep(3,200)),
+                model.type="poisson")
+```
+
+Negative binomial regression:
+```{r}
+library(MASS)
+m4<-glm.nb(naffairs~avgmarr + hapavg + vryhap + smerel + vryrel + yrsmarr4 + 
+             yrsmarr5 + yrsmarr6,data=Hilbe)
+decompose.model(m4,group.by = c(rep(1,201),rep(2,200),rep(3,200)),model.type="nb")
+```

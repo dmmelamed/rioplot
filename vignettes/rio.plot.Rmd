@@ -1,0 +1,132 @@
+---
+title: "rio.plot"
+output: rmarkdown::html_vignette
+description: >
+  This vignette explains the rationale and implementation for the rio.plot function.
+vignette: >
+  %\VignetteIndexEntry{rio.plot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+As described in detail in Schoon, Melamed, and Breiger (2024), rio.plot turns a regression model inside out so that you can look at the model space in reduced rank. The cases and the variables can both be visualized in the same space. 
+
+We'll start by computing a simple rio.plot and descirbing the parts. 
+
+```{r}
+library(rioplot)
+data(Kenworthy99)
+m1 <- lm(scale(dv) ~ scale(gdp) + scale(pov) + scale(tran) -1,data=Kenworthy99)
+rp1 <- suppressMessages(rio.plot(m1,include.int="no"))
+names(rp1)
+
+```
+
+rio.plot automates the creation of a ggplot object of the model space. This is the gg.obj.By default, the variables are projected into the space, but the cases are not.
+The row.dimensions and col.dimensions refer to the dimensions for the cases and variables, respectively. The case.variances detail how each case contributes to the estimated variance for each predictor variable. Finally, U and UUt refer to the orthogonalized row space matrix from the Singular Value Decomposition of the predictors and y-hat, and to the hat or projection matrix, respectively.
+
+
+Below is an example of a rio.plot for OLS regression. Note that the gg.obj that is returned is a ggplot. As such, all ggplot2 options may be layered onto the gg.obj. Here we use scale_x_continuous to improve the plot space.  
+```{r}
+rp1$gg.obj
+library(ggplot2)
+rp1$gg.obj + scale_x_continuous(limits=c(-.55,1.2))
+```
+
+
+By default, the cases are not included the gg.obj. They can be added with the r1 option. Below, we have also added the case.names option to rename the cases. 
+```{r}
+rp2 <- rio.plot(m1,r1=1:15,case.names=paste(1:15),include.int="no")
+rp2$gg.obj 
+```
+
+
+rio.plot also allows analysts to aggregate cases based on some variable. In this way, the simultaneous contributions of clusters or subsets of cases can be visualized. Below, we illustate how types of cases contribute to the regression model. 
+```{r}
+library(dplyr)
+Kenworthy99 <- mutate(Kenworthy99,type=c("Liberal","Corp","Liberal",
+                                         "SocDem","SocDem","Corp","Corp","Corp","Corp","Corp","SocDem","SocDem",
+"Liberal","Liberal","Liberal"))
+# Aggregate cases
+rp3 <- rio.plot(m1,r1=1:15,group.cases=Kenworthy99$type,include.int="no")
+rp3$gg.obj
+rp3$gg.obj + scale_x_continuous(limits=c(-.7,1.3))
+```
+
+
+rio.plot includes an option to rename the variables or columns as well. Below is an example of implementation of this option. 
+```{r}
+rp4 <- rio.plot(m1,r1=1:15,case.names=paste(1:15),include.int="no",
+                col.names = paste(1:4))
+rp4$gg.obj
+```
+
+
+ALl of the models above are OLS regression models. rio.plot, as of June 2024, works on OLS, logistic, Poisson and negative binomial regression models. Below is an application to a negative binomial regression model.
+```{r}
+suppressMessages(library(MASS))
+data("Hilbe")
+Hilbe[,2:ncol(Hilbe)]<-scale(Hilbe[,2:ncol(Hilbe)])
+
+m2<-glm.nb(naffairs~avgmarr + hapavg + vryhap + smerel + vryrel + yrsmarr4 + 
+             yrsmarr5 + yrsmarr6,data=Hilbe)
+rp5 <- rio.plot(m2,model.type="nb",col.names =c("intercept",
+                                                names(m2$model)[c(2:9,1)]))
+rp5$gg.obj + scale_x_continuous(limits=c(-.7,.7))
+```
+
+
+In more advanced applications, you may want to customize rio.plot objects. Below we begin illustrating this by manually adding cases to the rio.plot, rather than using the r1 option to have rio.plot do this. 
+```{r}
+data(Kenworthy99)
+Kenworthy99 <- mutate(Kenworthy99,type=c("Liberal","Corp","Liberal",
+                                         "SocDem","SocDem","Corp","Corp","Corp","Corp","Corp","SocDem",
+                                         "SocDem","Liberal","Liberal","Liberal"))
+m1 <- lm(scale(dv) ~ scale(gdp) + scale(pov) + scale(tran) -1,data=Kenworthy99)
+rp6 <- rio.plot(m1,include.int="no",col.names = c("gdp","prepov","tran","POSTPOV"))
+# no cases
+rp6$gg.obj + 
+  scale_x_continuous(limits=c(-2.45,3.25)) + 
+  scale_y_continuous(limits=c(-2.2,1.6))
+# create data to plot the cases
+pdat <- data.frame(x=rp1$row.dimensions[,1],y=rp1$row.dimensions[,2],Kenworthy99)
+rp6$gg.obj + 
+  scale_x_continuous(limits=c(-2.45,3.25)) + 
+  scale_y_continuous(limits=c(-2.2,1.6)) +
+  geom_point(data=pdat,aes(x=x,y=y,shape=type,color=type)) + # add the cases
+  theme(legend.position = "bottom") +
+  labs(shape="")
+```
+
+In this last example, we begin with a blank rio.plot that only includes or plots the fitted values from the model (i.e., no cases or variables). 
+  
+```{r}
+data(Kenworthy99)
+Kenworthy99 <- mutate(Kenworthy99,type=c("Liberal","Corp","Liberal",
+                                         "SocDem","SocDem","Corp","Corp","Corp","Corp","Corp","SocDem",
+                                         "SocDem","Liberal","Liberal","Liberal"))
+rp7 <- rio.plot(m1,exclude.vars=1:3,include.int="no",col.names = "PRED.POV")
+pdat1 <- data.frame(x=rp1$row.dimensions[,1],y=rp1$row.dimensions[,2],Kenworthy99)
+# rp7 does not include dimensions for variables that are excluded from the plot
+rp8 <- rio.plot(m1,include.int="no")
+# can exclude row 4 since y-hat is already plotted
+pdat2 <- data.frame(x=rp8$col.dimensions[1:3,1],
+                    y=rp8$col.dimensions[1:3,2],
+                    varnames=c("GDP","POV","TRAN"))
+
+rp7$gg.obj + 
+  scale_x_continuous(limits=c(-2.45,3.25)) + 
+  scale_y_continuous(limits=c(-2.2,1.6)) +
+  geom_point(data=pdat1,aes(x=x,y=y,shape=type,color=type)) + 
+  theme(legend.position = "bottom") +
+  labs(shape="") +
+  geom_point(data=pdat2,aes(x=x,y=y)) +
+  ggrepel::geom_text_repel(data=pdat1,aes(x=x,y=y,
+                                          label=tolower(ISO3)),color="grey50") +
+  ggrepel::geom_text_repel(data=pdat2,aes(x=x,y=y,label=varnames)) 
+ 
+```
+  
+
+ 
+
