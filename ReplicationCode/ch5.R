@@ -1,7 +1,8 @@
 rm(list=ls())
-require(tidyverse)
-require(plm)
-require(rioplot)
+library(tidyverse)
+library(plm)
+# install.packages("rioplot")
+library(rioplot)
 #####################   BECKFIELD RE-ANALYSIS  #####################
 #Beckfield (2006) Data
 year<- 3899 + c(-1912,-1904,-1914,-1911,-1907,-1902,-1912,-1907,-1904,-1902,-1919,-1909,-1920,-1918,-1910,-1905,-1925,-1920,-1913,-1908,-1905,-1904,-1926,-1921,-1918,-1916,-1915,-1910,-1905,-1905,-1904,-1903,-1913,-1908,-1904,-1916,-1912,-1908,-1905,-1920,-1913,-1908,-1904,-1924,-1918,-1912,-1907,-1904)
@@ -73,11 +74,11 @@ p2
 
 case.dat <- data.frame(p1$row.dimensions)
 case.dat <- mutate(case.dat,Names=itcode)
-p2 <- p2 + geom_point(data=case.dat,aes(x=X1,y=X2)) +
+p2 + geom_point(data=case.dat,aes(x=X1,y=X2)) +
   geom_text(data=case.dat,aes(x=X1,y=X2,label=Names),nudge_y=-.04) + coord_fixed() +
   theme(axis.title = element_text(size = 14),
         axis.text = element_text(size = 14))
-p2 # Figure 5.1
+# Figure 5.1
 
 # Denmark
 tp1 <- data.frame(rbind(unlist(project.point(case.dat[7,1:2],yhat.dat[8,])$newpoint),case.dat[7,1:2]))
@@ -94,6 +95,7 @@ p2 + geom_point(data=case.dat[7:10,],aes(x=X1,y=X2)) +
   theme(axis.title = element_text(size = 16),
         axis.text = element_text(size = 15),
         title = element_text(size=16))
+p2 
 f5.2.1 <- p2 + geom_point(data=case.dat[7:10,],aes(x=X1,y=X2)) +
   geom_text(data=case.dat[7:10,],aes(x=X1,y=X2,label=Names),nudge_y=-.05) +
   labs(title="Demark") +  coord_fixed() +
@@ -643,8 +645,8 @@ ols4 <- lm(zlife ~ zinequality + zpoverty + zinteraction - 1, data = mydata)
 
 
 ###Figure 5.6a
-require(tidyverse)
-require(rioplot)
+library(tidyverse)
+library(rioplot)
 mydata <- mutate(mydata,sizes=400 * abs(mydataInOut$i_ineq_m1),
                  sizes2=400 * abs(mydataInOut$i_ineq_var_m1),
                  sizes3=40 * abs(mydataInOut$i_pov_m2),
@@ -749,13 +751,13 @@ ggplot() + geom_point(data=mydata,aes(x=zpoverty,y=zlife,size=sizes4),color="bla
 ##############
 rm(list=ls())
 data("GSS2018")
-dog<-XY[,1]
-race<-XY[,2]
-sex<-XY[,3]
-children<-XY[,4]
-married<-XY[,5]
-age<-XY[,6]
-income<-XY[,7]
+dog<-GSS2018[,1]
+race<-GSS2018[,2]
+sex<-GSS2018[,3]
+children<-GSS2018[,4]
+married<-GSS2018[,5]
+age<-GSS2018[,6]
+income<-GSS2018[,7]
 #####################   GSS 2018 - Who has a Dog?  #####################
 
 ###Table 5.8

@@ -144,6 +144,7 @@ check.it.out <- DminusHalf %*% UUt %*% DminusHalf
 sum(abs(check.it.out - cosUUt)) # they are the same
 
 # Obtaining a partition of cases
+library(rioplot2)
 data("RonsFunctions") # Load several functions written by Ronald L. Breiger (e.g., concor)
 r1 <- cor(cosUUt)
 b <- concor(r1, 1:50) # include all the cases
@@ -162,11 +163,11 @@ memb4[b11]<-1
 memb4[b12]<-2
 memb4[b21]<-3
 
-require(reshape2)
+library(reshape2)
 UUtD <- melt(cosUUt)
 UUtD$Var1 <- factor(UUtD$Var1,levels=1:50)
 UUtD$Var2 <- factor(UUtD$Var2,levels=50:1)
-require(tidyverse)
+library(tidyverse)
 p1 <- ggplot(UUtD,aes(x=Var1,y=Var2,fill=value)) + theme_classic() +
   geom_tile() + scale_fill_gradient(limits=c(-1,1),low="grey90",high="black",breaks=c(-.99,-.5,0,.5,.99),labels=c("-1","-.5","0",".5","1")) + labs(x="",y="",fill="Cosine\nSimilarity") + 
   #scale_x_continuous(breaks=rev(perm4),labels=paste(rev(perm4))) + scale_y_continuous(breaks=perm4,labels=paste(perm4)) +

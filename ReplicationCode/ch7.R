@@ -1,4 +1,6 @@
-require(tidyverse)
+library(tidyverse)
+# install.packages("rioplot")
+library(rioplot)
 
 rm(list=ls())
 #####DATA######
@@ -145,7 +147,6 @@ S<-diag(s$d)
 
 Z5 <- mutate(data.frame(Z),dv=dv)
 m1<-lm(dv~ tran + gdp + prepov -1,data=Z5)
-require(rioplot)
 UV<-rbind(V,U%*%S)
 names<-c(variables,toupper(country.abbr))
 p1 <- rio.plot(m1,include.int="no")
@@ -350,14 +351,6 @@ aggregate.rows <- function(M, membs, myfun="sum") {
   colnames(step5) <- colnames(M)
   return(step5) }
 
-cosine <- function(x,y) {
-  # This assumes that x and y are vectors of the same length.
-  Sxy <- sum(x * y) # this is the sum of crossproducts
-  distX <- sqrt(sum(x^2)) # This is distance of x from the origin
-  distY <- sqrt(sum(y^2)) # distance of y from the origin
-  out <- Sxy / (distX * distY)
-  return(out)
-}
 
 onsetstatus<-Wimmer_et_al_EPR$onsetstatus
 lrexclpop<-Wimmer_et_al_EPR$lrexclpop
@@ -410,7 +403,7 @@ countries.aggregate.wcm<-aggregate.rows(country.nomiss, cowcode.nomiss, "min")
 X.wcm.maha<-aggregate.rows(X.wcm.df, country.nomiss, "mean")
 X.wcm.maha<-cbind(X.wcm.maha,countries.aggregate.wcm)
 dropvars<-c("spline1","spline2", "spline3", "country.nomiss", "cowcode.nomiss")
-require(caseMatch)
+library(caseMatch)
 out2<-case.match(data=X.wcm.maha, id.var="countries.aggregate.wcm", leaveout.vars = dropvars, distance="mahalanobis", case.N = 2, number.of.matches.to.return = 105, greedy.match="all")
 
 

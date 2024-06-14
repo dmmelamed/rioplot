@@ -7,7 +7,7 @@ plot(X,Y, pch=19, ylim=c(0,6), xlim=c(0,6))
 segments(x0=-1,y0=-1,x1=7,y1=7)
 
 dat <- data.frame(X,Y)
-require(tidyverse)
+library(tidyverse)
 ggplot(dat,aes(x=X,y=Y)) + geom_point(size=2) + theme_classic() + geom_abline(slope=1,intercept=0) +
   scale_x_continuous(limits=c(0,6),breaks=seq(0,6,2)) + scale_y_continuous(limits=c(0,6),breaks=seq(0,6,2)) +
   theme(axis.title = element_text(size = 15),
@@ -22,20 +22,20 @@ ggplot(dat,aes(x=X,y=Y)) + geom_point(size=2) + theme_classic() + geom_abline(sl
 
 rm(list=ls())
 data("SchneiderAndMakszin06")
-y05<-sm.data.05$fde
-wcoord05<-sm.data.05$wcoord
-govint05<-sm.data.05$govint
-union.density05<-sm.data.05$ud
-epl05<-sm.data.05$epl
-socexp05<-sm.data.05$socexp
-vocational205<-sm.data.05$vet_un
-vocational305<-sm.data.05$vet_isced3
-lmexp05<-sm.data.05$lmexp
-turnout_reg05<-sm.data.05$vt_reg
-turnout_age05<-sm.data.05$vt_vap
-year05<-sm.data.05$year
-eduexp05<-sm.data.05$eduexp
-country05<-sm.data.05$country
+y05<-SchneiderAndMakszin06$fde
+wcoord05<-SchneiderAndMakszin06$wcoord
+govint05<-SchneiderAndMakszin06$govint
+union.density05<-SchneiderAndMakszin06$ud
+epl05<-SchneiderAndMakszin06$epl
+socexp05<-SchneiderAndMakszin06$socexp
+vocational205<-SchneiderAndMakszin06$vet_un
+vocational305<-SchneiderAndMakszin06$vet_isced3
+lmexp05<-SchneiderAndMakszin06$lmexp
+turnout_reg05<-SchneiderAndMakszin06$vt_reg
+turnout_age05<-SchneiderAndMakszin06$vt_vap
+year05<-SchneiderAndMakszin06$year
+eduexp05<-SchneiderAndMakszin06$eduexp
+country05<-SchneiderAndMakszin06$country
 
 
 ###########################################
@@ -116,11 +116,11 @@ var_j <- round(var,8) #variance by case
 b.cases.sm<-solve(t(X)%*%X)%*%t(X)%*%diag(y) #Individual observations' contribution to overall coefficients
 
 wftype1<-rep(0,30) 
-wftype1[which(sm.data.05$p1_y>.5)]<-1 #Membership in first configuration identified by Schneider and Makszin
+wftype1[which(SchneiderAndMakszin06$p1_y>.5)]<-1 #Membership in first configuration identified by Schneider and Makszin
 wftype2<-rep(0,30)
-wftype2[which(sm.data.05$p2_y>.5)]<-1 #Membership in second configuration identified by Schneider and Makszin
+wftype2[which(SchneiderAndMakszin06$p2_y>.5)]<-1 #Membership in second configuration identified by Schneider and Makszin
 wftype3<-rep(0,30)
-wftype3[which(sm.data.05$p3_y>.5)]<-1 #Membership in third configuration identified by Schneider and Makszin
+wftype3[which(SchneiderAndMakszin06$p3_y>.5)]<-1 #Membership in third configuration identified by Schneider and Makszin
 
 ref<-wftype1+wftype2+wftype3
 wftype.in<-rep(0,30)
@@ -173,25 +173,25 @@ sqrt(wftn_var)
 #############################
 rm(list=ls())
 data("RaginData")
-incrat<-raginfiss[,1]
-pinc<-raginfiss[,2]
-ped<-raginfiss[,3]
-resp_ed<-raginfiss[,4]
-afqt<-raginfiss[,5]
-kids<-raginfiss[,6]
-married<-raginfiss[,7]
-black<-raginfiss[,8]
-male<-raginfiss[,9]
-povd<-raginfiss[,10]
+incrat<-RaginData[,1]
+pinc<-RaginData[,2]
+ped<-RaginData[,3]
+resp_ed<-RaginData[,4]
+afqt<-RaginData[,5]
+kids<-RaginData[,6]
+married<-RaginData[,7]
+black<-RaginData[,8]
+male<-RaginData[,9]
+povd<-RaginData[,10]
 
 
 #Table 8.5
 #Create Table 4
-m1<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(raginfiss, black==0 & male==1))
-m2<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(raginfiss, black==0 & male==0))
-m3<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(raginfiss, black==1 & male==1))
-m4<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(raginfiss, black==1 & male==0))
-m5<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial",data=raginfiss)
+m1<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(RaginData, black==0 & male==1))
+m2<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(RaginData, black==0 & male==0))
+m3<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(RaginData, black==1 & male==1))
+m4<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial", data=subset(RaginData, black==1 & male==0))
+m5<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial",data=RaginData)
 summary(m1)
 summary(m2)
 summary(m3)
@@ -202,7 +202,7 @@ summary(m5) # Table 8.5
 #tab_model(m1, m2, m3, m4, m5, show.se=TRUE, show.ci=FALSE, transform = NULL, auto.label = FALSE, digits = 3)
 
 #Table 8.6
-povdM1<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial",data=raginfiss)
+povdM1<-glm(povd~afqt+pinc+ped+resp_ed+married+kids, family="binomial",data=RaginData)
 X<-cbind(afqt,pinc,ped,resp_ed,married,kids)
 cons<-rep(1,nrow(X))
 X<-cbind(cons,X)
@@ -229,7 +229,7 @@ pvalue = summary(povdM1)$coefficients[,4]
 mse_j = resid_sqrd/(dim(X)[1] - dim(X)[2])
 mse_j = round(mse_j,8)
 
-var = matrix(0, 4185, 8)
+var = matrix(0, 4185, 7)
 denom = dim(var)[1]-dim(var)[2]
 for (i in 1:dim(var)[1]) {
   var[i,] = (resid_sqrd[i]/denom)*diag(solve(t(X)%*%X))
@@ -239,20 +239,20 @@ for (i in 1:dim(var)[1]) {
 #var_j <- round(var,8) #variance by case
 
 inpov<-rep(0,4185)
-inpov[which(raginfiss$povd==1)]<-1
+inpov[which(RaginData$povd==1)]<-1
 
 inpov_coef<-t(aggregate(t(b.cases.rf),by=list(inpov),FUN=sum))[-1,] #subset contributions by values on the outcome
 inpov_coef # Table 8.6
 
 #Table 8.7
 binpov<-rep(0,4185)
-binpov[which(raginfiss$povd==1 & raginfiss$black==1)]<-1
+binpov[which(RaginData$povd==1 & RaginData$black==1)]<-1
 winpov<-rep(0,4185)
-winpov[which(raginfiss$povd==1 & raginfiss$black==0)]<-1
+winpov[which(RaginData$povd==1 & RaginData$black==0)]<-1
 boutpov<-rep(0,4185)
-boutpov[which(raginfiss$povd==0 & raginfiss$black==1)]<-1
+boutpov[which(RaginData$povd==0 & RaginData$black==1)]<-1
 woutpov<-rep(0,4185)
-woutpov[which(raginfiss$povd==0 & raginfiss$black==0)]<-1
+woutpov[which(RaginData$povd==0 & RaginData$black==0)]<-1
 
 binpov_coef<-t(aggregate(t(b.cases.rf),by=list(binpov),FUN=sum))[-1,]
 winpov_coef<-t(aggregate(t(b.cases.rf),by=list(winpov),FUN=sum))[-1,]

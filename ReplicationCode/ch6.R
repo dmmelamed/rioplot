@@ -1,7 +1,9 @@
 
 rm(list=ls()) #remove everything in the environment
-data("GSS 2016")
-require(tidyverse)
+# install.packages("rioplot")
+library(rioplot)
+data("GSS.2016")
+library(tidyverse)
 
 X <- na.omit(data.frame(educ=GSS.2016$educ,occprestige_father=GSS.2016$occprestige_father,female=GSS.2016$female,white=GSS.2016$white))
 m1 <- lm(scale(educ) ~ scale(female) + scale(white) + scale(occprestige_father) -1, data=X)
@@ -19,7 +21,7 @@ round(aggregate(t(b.long*1000),by=list(X$white),FUN="mean"),4)
 X2 <- data.frame(scale(X))
 m1 <- lm(educ ~ female*white + occprestige_father -1, data=X2)
 summary(m1)
-require(emmeans)
+library(emmeans)
 ma1 <- as.data.frame(emmeans(m1,~female,at=list(white=0)))
 ma2 <- as.data.frame(emmeans(m1,~female,at=list(white=1)))
 mar1 <- rbind(ma1,ma2)

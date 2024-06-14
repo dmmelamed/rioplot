@@ -1,7 +1,7 @@
-require(tidyverse)
-require(ggrepel)
+library(tidyverse)
+library(ggrepel)
 # install.packages("rioplot")
-require(rioplot)
+library(rioplot)
 
 rm(list=ls())
 # Read in the data; see Table 2.1
@@ -70,6 +70,8 @@ ggplot(pdat,aes(x=tran.resid,y=yhat,label=ISO3)) + theme_classic() + geom_point(
 
 
 # Specialized version of rio.plot to leave out the lines connecting the variables to the projection through the origin. Don't use this function otherwise (stopped updating as of 6.8.22)
+devtools::install_github("dmmelamed/rioplot2")
+library(rioplot2)
 data("rioplots")
 rp1 <- rio.plot2(m1,include.int="no",r1=1:15,case.col = "grey60",case.names = ISO3,var.name.col = "grey25")
 
@@ -177,7 +179,7 @@ d <- sqrt(d)
 cosUUt <- UUt / outer(d,d)
 rownames(cosUUt) <- nation.long
 colnames(cosUUt) <- nation.long
-require(reshape2)
+library(reshape2)
 UUtD <- melt(cosUUt)
 # Run Kmeans (3-cluster) on U:
 # K3 <- kmeans(U, center = 3, iter.max=10000, nstart = 10000)

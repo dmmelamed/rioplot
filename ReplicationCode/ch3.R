@@ -1,8 +1,9 @@
 
 rm(list=ls())
-require(tidyverse)
-require(rioplot)
-require(MASS) # To estimate the negative binomial regression models. 
+library(tidyverse)
+# install.packages("rioplot")
+library(rioplot)
+library(MASS) # To estimate the negative binomial regression models. 
 # Load the file "Hilbe.RData"
 data("Hilbe")
 
